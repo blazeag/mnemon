@@ -146,14 +146,14 @@ int display_final_report(struct _counters *counters)
 
 	printf("\nBACKUP CONCLUDED - Elapsed time: %s\n", seconds_to_time(time(NULL) - counters->timestamp));
 	printf("---------------------------------------------------------------------\n");
-	printf("Unmodified %15d%s\n", counters->unmodified.number, scale_bytes(counters->unmodified.size));
-	printf("New        %15d%s\n", counters->fresh.number, scale_bytes(counters->fresh.size));
-	printf("Modified   %15d%s\n", counters->modified.number, scale_bytes(counters->modified.size));
-	printf("Moved      %15d%s\n", counters->moved.number, scale_bytes(counters->moved.size));
-	printf("Errors     %15d%s\n", counters->errors.number, scale_bytes(counters->errors.size));
+	printf("Unmodified       %15d%s\n", counters->unmodified.number, scale_bytes(counters->unmodified.size));
+	printf("New              %15d%s\n", counters->fresh.number, scale_bytes(counters->fresh.size));
+	printf("Modified         %15d%s\n", counters->modified.number, scale_bytes(counters->modified.size));
+	printf("Moved            %15d%s\n", counters->moved.number, scale_bytes(counters->moved.size));
+	printf("Errors           %15d%s\n", counters->errors.number, scale_bytes(counters->errors.size));
 	printf("---------------------------------------------------------------------\n");
-	printf("Total new  %15ld%s\n", added_total_number, scale_bytes(added_total_size) );
-	printf("total      %15ld%s", total_number, scale_bytes(total_size) );
+	printf("Total new files  %15ld%s\n", added_total_number, scale_bytes(added_total_size) );
+	printf("Total files      %15ld%s", total_number, scale_bytes(total_size) );
 }
 
 
