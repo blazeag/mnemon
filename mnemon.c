@@ -45,9 +45,9 @@ struct _counters
 	struct _dati moved;
 };
 
-#include "functions/functions.h"
-#include "functions/procedures.h"
-#include "functions/backup.h"
+#include "libs/functions.h"
+#include "libs/procedures.h"
+#include "libs/backup.h"
 
 
 
