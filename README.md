@@ -36,4 +36,4 @@ CLI usage:
 
 *  Ability to specify an inclusion list file, or paths directly, via CLI parameters 
 *  Ability to specify an exclusion list file, containing full paths or regular expressions
-*  Built-in method, callable via CLI parameter, to delete a snapshot
+*  Built-in method, callable via CLI parameter, to delete snapshots
