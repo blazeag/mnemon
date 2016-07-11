@@ -1,5 +1,5 @@
 /***********************************************************************
- mnemon v0.1.0 - 2016-07-09 11:48
+ mnemon v0.1.0
  ----------------------------------------------------------------------
  Andrea Gardoni
  ***********************************************************************/
@@ -75,14 +75,14 @@ int main( int argc, char **argv )
 	printf("\n");			
 	atexit(before_exit);		// At exit, output a new empty line
 
-	// Check to be root
+	// Checks to be root
 	if (! is_root() )
 	{
 		printf("[Error  ]\tYou must be root");
 		exit(-1);
 	}
 
-	// Check parameters count
+	// Checks parameters count
 	if (argc != 2)
 	{
 		printf("\t$ %s <backup dir>", argv[0]);
