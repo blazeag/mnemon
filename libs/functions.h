@@ -106,7 +106,7 @@ int is_root()
 {
 	FILE *Fp;
 
-	Fp = fopen(_TEMPORARY_ROOT_FILE, "w");
+	Fp = fopen(_TEMP_ROOT_FILE, "w");
 
 	if (Fp == NULL)
 	{
@@ -114,7 +114,7 @@ int is_root()
 	}
 
 	fclose(Fp);
-	unlink(_TEMPORARY_ROOT_FILE);
+	unlink(_TEMP_ROOT_FILE);
 
 	return true;
 }
