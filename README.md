@@ -22,7 +22,7 @@ gcc mnemon.c -o mnemon -lsqlite3
 
 ### Usage
 
-First of all, Mnemon only works with root permissions.
+Mnemon only works with root permissions.
 You must specify the list of directories to back up, one per line, into a file named included_paths.txt, and store it in the same directory of mnemon.
 
 CLI usage:
