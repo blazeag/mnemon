@@ -158,11 +158,6 @@ int display_final_report(struct _counters *counters)
 
 
 
-
-
-
-
-
 // Check if a file is valid
 // -------------------------------------------------------
 int is_file_valid(struct dirent *file)
@@ -187,8 +182,6 @@ int is_file_valid(struct dirent *file)
 
 	return true;
 }
-
-
 
 
 
@@ -238,9 +231,6 @@ int is_path_excluded(char *path)
 
 
 
-
-
-
 // Open DB
 // -------------------------------------------------------
 int db_initialization(sqlite3 **db, char **db_filename, char **db_temp_filename, char *path)
@@ -283,14 +273,9 @@ int db_initialization(sqlite3 **db, char **db_filename, char **db_temp_filename,
 
 
 
-
-
-
-
-
-// Cerca nel DB se esiste un file che punta allo stesso inode
-// Ed effettua le operazioni di aggiornamento del DB
-// Restituisce true se il file e' gia' presente nel DB, altrimenti false
+// Checks in DB if exists the record of a file which points to the same inode,
+// and makes the necessary insert/update operations.
+// Returns true if file is present into DB, false otherwise
 // -------------------------------------------------------
 int exists_in_db(sqlite3 **db, char *path, char *latest_backup_root, struct stat stats, char **old_path)
 {
@@ -312,7 +297,7 @@ int exists_in_db(sqlite3 **db, char *path, char *latest_backup_root, struct stat
 
 	join_strings(&query, 3, "SELECT path, mtime FROM file WHERE inode='", inode_str, "'");
 	sqlite3_get_table(*db, query, &dati, &row_number, &col_number, &error);
-	if ( error!=NULL )
+	if (error != NULL)
 	{
 		printf("SQLite SELECT error: %s\n", error);
 		sqlite3_free(error);
