@@ -24,7 +24,7 @@
 
 #define true 1
 #define false !true
-#define _TEMPORARY_ROOT_FILE "/_mnemontemp_"
+#define _TEMP_ROOT_FILE "/_mnemontemp_"
 #define _TEMP_BACKUP_DIR "_mnemontempdir_/"
 #define _DB_FILE "mnemon.db"
 #define _TEMP_DB_FILE "_mnemon.db"
