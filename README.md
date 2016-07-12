@@ -25,15 +25,15 @@ gcc mnemon.c -o mnemon -lsqlite3
 Note:
 
 * mnemon only works under linux, with btree filesystems, and with root permissions.
-* You must specify a list of directories to back up, one per line, into a file named included_paths.txt, and store it in the same directory of mnemon.
+* You must specify a list of directories to back up, one per line, into a file named included_paths.txt, and indicate it with -i parameter
 * All source paths must be phisically placed in the same hard drive, otherwise backup process won't work correctly, because inode IDs stored in SQLite DB could be ambiguous. If you want to back up contents from more drives, you have to create a backup instance for each one, which will store snapshots in different folders, with different SQLite DBs.
 
 CLI usage:
-./mnemon /path/to/backup/dir/
+./mnemon /path/to/backup/dir/ -i /path/to/inclusions/file
 
 
 ### ToDo list
 
-*  Ability to specify an inclusion list file, or paths directly, via CLI parameters 
+*  Ability to specify paths directly via CLI parameters 
 *  Ability to specify an exclusion list file, containing full paths or regular expressions
 *  Built-in method, callable via CLI parameter, to delete snapshots

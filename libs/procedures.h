@@ -9,7 +9,8 @@
 // Prototypes
 // *******************************************************
 
-int check_cli_arguments(char **argv);
+void show_help();
+int check_cli_arguments(int argc, char **argv, struct _parameters *parameters);
 int is_file_valid(struct dirent *file);
 int is_path_excluded(char *path);
 int display_final_report(struct _counters *counters);
@@ -19,6 +20,7 @@ int get_latest_backup_dir (sqlite3 **db, char **string);
 void before_exit();
 int delete_temp_directory(char *path);
 int exists_in_db(sqlite3 **db, char *path, char *latest_backup_root, struct stat stats, char **old_path);
+int save_included_paths (char **included_paths, char *inclusions_file);
 
 // *******************************************************
 
@@ -79,6 +81,9 @@ int save_included_paths (char **included_paths, char *inclusions_file)
 		// If return found, skip to next line
 		else
 		{
+			// Adds a final / to path if needed
+			correct_path(&included_paths[i]);
+			
 			i++;	// Next string
 			j = 0;	// Go to string first character
 		}
@@ -442,18 +447,97 @@ int get_latest_backup_dir (sqlite3 **db, char **string)
 
 
 
+// Shows usage and help
+// -------------------------------------------------------
+void show_help()
+{
+	printf("SYNOPSIS\n");
+	printf("\tmnemon <backup dir> [-i inclusions_file]\n\n");
+
+	printf("OPTIONS\n");
+	printf("\t-i, --inclusions-file <filename>");
+}
+
 
 
 // Check shell parameters
 // -------------------------------------------------------
-int check_cli_arguments(char **argv)
+int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 {
+	int i;
+	
+	parameters->backup_dir = NULL;
+	parameters->inclusions_filename = NULL;
+	
+	
+	
+	// Checks parameters count
+	if (argc < 2)
+	{
+		show_help();
+		exit(-1);
+	}
+	
+	// If parameters come before backup dir, stops
+	if (argv[1][0] == '-')
+	{
+		show_help();
+		exit(-1);
+	}
+	
+	// Stores backup dir in parameters structure
+	join_strings(&parameters->backup_dir, 1, argv[1]);
+	
+	// Adds a final / to backup dir if needed
+	correct_path(&parameters->backup_dir);
+
+	
+	
+	// Searches for parameters
+	for (i = 2; i < argc; i++)
+	{
+		// Inclusion file
+		if (
+			strcmp(argv[i], "-i") == 0
+			|| strcmp(argv[i], "--inclusions-file") == 0
+		)
+		{
+			if ((i + 1) >= argc)
+			{
+				printf("--inclusions-file parameter needs a filename");
+				exit(-1);
+			}
+			else
+			{
+				join_strings(&parameters->inclusions_filename, 1, argv[i + 1]);
+				
+				// Checks if file exists
+				if (! file_exists(parameters->inclusions_filename))
+				{
+					printf("Inclusions file %s doesn't exist", parameters->inclusions_filename);
+					exit(-1);
+				}
+				
+				i++;
+			}
+		}
+	}
+	
+	// Check inclusions file existence
+	if (parameters->inclusions_filename == NULL)
+	{
+		printf("You must specify an inclusions file with -i or --includes-file parameter");
+		
+		exit(-1);
+	}
+
+
 	DIR *Dp;
 
 	// Check if backup directory exists
-	if ((Dp = opendir(argv[1])) == NULL)
+	if ((Dp = opendir(parameters->backup_dir)) == NULL)
 	{
-		printf("[Error  ]\tBackup directory %s doesn't exist!", argv[1]);
+		printf("[Error  ]\tBackup directory %s doesn't exist!", parameters->backup_dir);
 		exit(-1);
 	}
 	else

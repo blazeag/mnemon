@@ -352,7 +352,7 @@ int join_strings(char **final_string, int string_number, ...)
 	va_end(vl);
 		
 
-	if (( *final_string=(char*)malloc((length+1)*sizeof(char)) ) == NULL)
+	if (( *final_string = (char*) malloc((length + 1) * sizeof(char)) ) == NULL)
 	{
 		printf("[Error  ]\tInsufficient physical memory");
 		exit(-1);
@@ -380,7 +380,7 @@ int correct_path(char **path)
 {
 	char *temp = *path;
 
-	if ( temp[strlen(temp)-1]=='/' ) return 0;
+	if (temp[strlen(temp) - 1] == '/') return 0;
 	join_strings(path, 2, temp, "/");
 
 	return 0;

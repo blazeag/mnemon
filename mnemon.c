@@ -45,6 +45,14 @@ struct _counters
 	struct _dati moved;
 };
 
+struct _parameters
+{
+	char *backup_dir;
+	char *inclusions_filename;
+};
+
+
+
 #include "libs/functions.h"
 #include "libs/procedures.h"
 #include "libs/backup.h"
@@ -65,10 +73,10 @@ int main( int argc, char **argv )
 	char *current_backup_dir;	// Directory to store current backup
 	struct stat backup_root_stats;	// Stats of all backups root
 	struct _counters counters;	// Counters
+	struct _parameters parameters;	// Parameters
 	sqlite3 *db;			// DB pointer
 	char *db_filename;		// SQLite database file name
 	char *temp_db_filename;		// Temporary SQLite database file name
-	char *includes_filename;	// Included path list file name
 	char **included_paths;		// Array containing included paths
 	int i;
 
@@ -82,40 +90,31 @@ int main( int argc, char **argv )
 		exit(-1);
 	}
 
-	// Checks parameters count
-	if (argc != 2)
-	{
-		printf("\t$ %s <backup dir>", argv[0]);
-		exit(-1);
-	}
 
-	// Save and allocate memory for included paths
+	// Checks cli arguments
+	check_cli_arguments(argc, argv, &parameters);
+	
+	// Allocates memory for included paths
 	included_paths = (char**) malloc(100 * sizeof(char*));
 
-	for (i=0; i<100; i++)
+	for (i = 0; i < 100; i++)
 	{
 		included_paths[i] = (char*) malloc(100 * sizeof(char));
 	}
 
-	join_strings(&includes_filename, 1, "included_paths.txt");
-	save_included_paths(included_paths, includes_filename);
-
-	// Corrects paths if needed
-	correct_path(&argv[1]);
-
-	// Checks cli arguments
-	check_cli_arguments(argv);
+	// Gets included paths and stores them into a array
+	save_included_paths(included_paths, parameters.inclusions_filename);
 
 	// If last backup interrupted before finish, deletes temporary directory
-	delete_temp_directory(argv[1]);
+	delete_temp_directory(parameters.backup_dir);
 
 	// SQLite DB initialization
-	db_initialization(&db, &db_filename, &temp_db_filename, argv[1]);
+	db_initialization(&db, &db_filename, &temp_db_filename, parameters.backup_dir);
 
 	// Stores current GMT date into a specified string
 	save_current_date(&str_current_date, &timestamp);
 	get_latest_backup_dir(&db, &latest_backup_timestamp);
-	join_strings(&latest_backup_root, 2, argv[1], latest_backup_timestamp);
+	join_strings(&latest_backup_root, 2, parameters.backup_dir, latest_backup_timestamp);
 	
 	// Creates and initializes strucutre containing files counters
 	counters_initialization(&counters);
@@ -125,20 +124,20 @@ int main( int argc, char **argv )
 	while (strlen(included_paths[i]) > 0)
 	{
 		// Generate paths to latest backup directory and current backup directory
-		join_strings(&temp_backup_root, 2, argv[1], _TEMP_BACKUP_DIR);
-		join_strings(&latest_backup_dir, 3, argv[1], latest_backup_timestamp, included_paths[i]);
-		join_strings(&current_backup_dir, 3, argv[1], _TEMP_BACKUP_DIR, included_paths[i]);
+		join_strings(&temp_backup_root, 2, parameters.backup_dir, _TEMP_BACKUP_DIR);
+		join_strings(&latest_backup_dir, 3, parameters.backup_dir, latest_backup_timestamp, included_paths[i]);
+		join_strings(&current_backup_dir, 3, parameters.backup_dir, _TEMP_BACKUP_DIR, included_paths[i]);
 	
 		// Execute backup as indicated in parameters
-		directory_backup(&db, &counters, included_paths[i], latest_backup_dir, current_backup_dir, argv[1], latest_backup_root);
+		directory_backup(&db, &counters, included_paths[i], latest_backup_dir, current_backup_dir, parameters.backup_dir, latest_backup_root);
 
 		i++;
 	}
 
 	// Sets same mother directory attributes to temporary one and rename it
-	stat(argv[1], &backup_root_stats);
+	stat(parameters.backup_dir, &backup_root_stats);
 	copy_attributes(temp_backup_root, 4, backup_root_stats);
-	join_strings(&current_backup_root, 2, argv[1], str_current_date);
+	join_strings(&current_backup_root, 2, parameters.backup_dir, str_current_date);
 	rename(temp_backup_root, current_backup_root);
 
 	write_date_into_db (&db, str_current_date, timestamp, &counters);	// Writes current backup data to DB
