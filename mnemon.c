@@ -1,9 +1,20 @@
-/***********************************************************************
- mnemon v0.1.0
- ----------------------------------------------------------------------
- Andrea Gardoni
- ***********************************************************************/
+/*
+    mnemon - Yet another hard link based snapshot backup system
+    (c) 2009-2016 Andrea Gardoni <andrea.gardonitwentyfour@gmail.com> minus 24
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License v2 as published by
+    the Free Software Foundation.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details. You should have received
+    a copy of the GNU General Public License v2 along with this program.
+    If not, see <http://www.gnu.org/licenses/gpl-2.0.html>.
+*/
 
+// Compile instructions:
 // gcc mnemon.c -o mnemon -lsqlite3
 // If sqlite3.h error: apt-get install libsqlite3-dev
 
