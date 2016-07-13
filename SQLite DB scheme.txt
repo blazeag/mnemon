@@ -1,0 +1,22 @@
+===================================================
+mnemon SQLite Database table scheme
+===================================================
+
+
+
+Table 'file'
+------------------
+inode INT NOT NULL PRIMARY KEY		# File's Inode ID
+path TEXT NOT NULL			# Full file path
+mtime VARCHAR(255)			# File's last modification time
+
+
+
+Table 'backup'
+------------------
+timestamp INT NOT NULL PRIMARY KEY	# Backup date in timestamp format
+directory VARCHAR(255) NOT NULL		# Backup root directory
+total_files INT NOT NULL		# Total number of files
+total_bytes INT NOT NULL		# Total size of all files in the backup, in bytes
+added_files INT NOT NULL		# Total number of new files
+added_bytes INT NOT NULL		# Total size of new files, in bytes
