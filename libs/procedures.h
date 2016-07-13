@@ -21,6 +21,8 @@ void before_exit();
 int delete_temp_directory(char *path);
 int exists_in_db(sqlite3 **db, char *path, char *latest_backup_root, struct stat stats, char **old_path);
 int save_paths(char **paths, char *filename);
+int db_initialization(sqlite3 **db, char **db_filename, char **db_temp_filename, char *path);
+int close_db(sqlite3 **db, char *db_filename, char *db_temp_filename, char *path);
 
 // *******************************************************
 

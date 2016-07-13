@@ -33,7 +33,7 @@ int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _count
 	struct stat source_stats;		// Source file properties
 	struct stat latest_backup_stats;	// Latest backup file properties
 	int i, n;				// Counters
-	char *current_filename; 		// Current analyzed file name
+	char *current_filename; 		// Current analyzing file name
 	int64_t current_size;			// Current file size
 	char *new_dir;				// New subdirectory path
 	char *new_source_dir;			// Path to new subdirectory to be analyzed
