@@ -1,0 +1,14 @@
+/cdrom
+/dev
+/lost+found
+/mnt
+/tmp
+/proc
+/sys
+/lib/init
+/lib/modules
+/var/lock
+/var/run
+/selinux
+/srv
+/opt
