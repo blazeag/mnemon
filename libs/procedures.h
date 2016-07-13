@@ -12,15 +12,15 @@
 void show_help();
 int check_cli_arguments(int argc, char **argv, struct _parameters *parameters);
 int is_file_valid(struct dirent *file);
-int is_path_excluded(char *path);
+int is_path_excluded(char *path, char **excluded_paths);
 int display_final_report(struct _counters *counters);
 int counters_initialization(struct _counters *counters);
-int write_date_into_db (sqlite3 **db, char *current_date, unsigned long timestamp, struct _counters *counters);
-int get_latest_backup_dir (sqlite3 **db, char **string);
+int write_date_into_db(sqlite3 **db, char *current_date, unsigned long timestamp, struct _counters *counters);
+int get_latest_backup_dir(sqlite3 **db, char **string);
 void before_exit();
 int delete_temp_directory(char *path);
 int exists_in_db(sqlite3 **db, char *path, char *latest_backup_root, struct stat stats, char **old_path);
-int save_included_paths (char **included_paths, char *inclusions_file);
+int save_paths(char **paths, char *filename);
 
 // *******************************************************
 
@@ -52,15 +52,15 @@ int delete_temp_directory(char *path)
 
 // Store included backup paths into a array
 // -------------------------------------------------------
-int save_included_paths (char **included_paths, char *inclusions_file)
+int save_paths (char **paths, char *filename)
 {
 	FILE *Fp;
 	int i, j;
 	char c;
 
 	// Check for errors
-	if (! file_exists(inclusions_file)) return -1;
-	Fp = fopen(inclusions_file, "r");
+	if (! file_exists(filename)) return -1;
+	Fp = fopen(filename, "r");
 	if (Fp == NULL) return -2;
 
 	// Lettura e salvataggio dati
@@ -74,7 +74,7 @@ int save_included_paths (char **included_paths, char *inclusions_file)
 		// If return not found, adds character to string
 		if (c != '\n')
 		{
-			included_paths[i][j] = c;
+			paths[i][j] = c;
 			j++;
 		}
 
@@ -82,7 +82,7 @@ int save_included_paths (char **included_paths, char *inclusions_file)
 		else
 		{
 			// Adds a final / to path if needed
-			correct_path(&included_paths[i]);
+			correct_path(&paths[i]);
 			
 			i++;	// Next string
 			j = 0;	// Go to string first character
@@ -192,44 +192,17 @@ int is_file_valid(struct dirent *file)
 
 // Check if a path must be excluded
 // -------------------------------------------------------
-int is_path_excluded(char *path)
+int is_path_excluded(char *path, char **excluded_paths)
 {
+	int i = 0;
 
-	// ...
-	// ToDo something from text file
-	// ...
-
-	// Always exclude this standard paths
-	if (strcmp(path, "/cdrom/") == 0) return true;
-	if (strcmp(path, "/dev/") == 0) return true;
-	if (strcmp(path, "/lost+found/") == 0) return true;
-	if (strcmp(path, "/mnt/") == 0) return true;
-	if (strcmp(path, "/tmp/") == 0) return true;
-	if (strcmp(path, "/proc/") == 0) return true;
-	if (strcmp(path, "/sys/") == 0) return true;
-	if (strcmp(path, "/lib/init/") == 0) return true;
-	if (strcmp(path, "/lib/modules/") == 0) return true;
-	if (strcmp(path, "/var/lock/") == 0) return true;
-	if (strcmp(path, "/var/run/") == 0) return true;
-	if (strcmp(path, "/selinux/") == 0) return true;
-	if (strcmp(path, "/srv/") == 0) return true;
-	if (strcmp(path, "/opt/") == 0) return true;
-
-	// Always exclude paths which match this patterns
-	if (string_match("/Trash/", path) != -1) return true;
-	if (string_match(".mozilla/", path) != -1) return true;
-	if (string_match(".wine/", path) != -1) return true;
-	if (string_match(".thumbnails/", path) != -1) return true;
-	if (string_match(".gnome2/", path) != -1) return true;
-	if (string_match(".nautilus/", path) != -1) return true;
-	if (string_match(".openoffice.org/", path) != -1) return true;
-	if (string_match(".pulse/", path) != -1) return true;
-	if (string_match(".macromedia/", path) != -1) return true;
-	if (string_match(".gconf/", path) != -1) return true;
-	if (string_match(".gimp/", path) != -1) return true;
-	if (string_match(".cache/", path) != -1) return true;
-	if (string_match(".compiz/", path) != -1) return true;
-	if (string_match(".metadata/", path) != -1) return true;
+	while (strlen(excluded_paths[i]) > 0)
+	{
+		printf("Checking %s against %s\n", path, excluded_paths[i]);
+		if (strcmp(path, excluded_paths[i]) == 0) return true;
+		
+		i++;
+	}
 
 	return false;
 }
@@ -452,10 +425,11 @@ int get_latest_backup_dir (sqlite3 **db, char **string)
 void show_help()
 {
 	printf("SYNOPSIS\n");
-	printf("\tmnemon <backup dir> [-i inclusions_file]\n\n");
+	printf("\tmnemon <backup_dir> -i inclusions_file [-e exclusions_file]\n\n");
 
 	printf("OPTIONS\n");
-	printf("\t-i, --inclusions-file <filename>");
+	printf("\t-i, --inclusions-file <filename>\n");
+	printf("\t-e, --exclusions-file <filename>");
 }
 
 
@@ -496,7 +470,7 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 	// Searches for parameters
 	for (i = 2; i < argc; i++)
 	{
-		// Inclusion file
+		// Inclusions file
 		if (
 			strcmp(argv[i], "-i") == 0
 			|| strcmp(argv[i], "--inclusions-file") == 0
@@ -521,12 +495,39 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 				i++;
 			}
 		}
+		
+		
+		// Exclusions file
+		if (
+			strcmp(argv[i], "-e") == 0
+			|| strcmp(argv[i], "--exclusions-file") == 0
+		)
+		{
+			if ((i + 1) >= argc)
+			{
+				printf("--exclusions-file parameter needs a filename");
+				exit(-1);
+			}
+			else
+			{
+				join_strings(&parameters->exclusions_filename, 1, argv[i + 1]);
+				
+				// Checks if file exists
+				if (! file_exists(parameters->exclusions_filename))
+				{
+					printf("Exclusions file %s doesn't exist", parameters->exclusions_filename);
+					exit(-1);
+				}
+				
+				i++;
+			}
+		}
 	}
 	
 	// Check inclusions file existence
 	if (parameters->inclusions_filename == NULL)
 	{
-		printf("You must specify an inclusions file with -i or --includes-file parameter");
+		printf("You must specify an inclusions list with -i or --inclusions-file parameter");
 		
 		exit(-1);
 	}

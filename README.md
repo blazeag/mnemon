@@ -29,11 +29,10 @@ Note:
 * All source paths must be phisically placed in the same hard drive, otherwise backup process won't work correctly, because inode IDs stored in SQLite DB could be ambiguous. If you want to back up contents from more drives, you have to create a backup instance for each one, which will store snapshots in different folders, with different SQLite DBs.
 
 CLI usage:
-./mnemon /path/to/backup/dir/ -i /path/to/inclusions/file
+./mnemon /path/to/backup/dir/ -i /path/to/inclusions/file [-e /path/to/exclusions/file]
 
 
 ### ToDo list
 
 *  Ability to specify paths directly via CLI parameters 
-*  Ability to specify an exclusion list file, containing full paths or regular expressions
 *  Built-in method, callable via CLI parameter, to delete snapshots

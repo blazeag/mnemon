@@ -11,6 +11,7 @@
 
 int directory_backup (
 	sqlite3 **db,				// SQLite DB pointer
+	struct _parameters *parameters,	// Structure containing files counters
 	struct _counters *counters,		// Structure containing files counters
 	char *source_dir,			// Source directory
 	char *latest_backup_dir,		// Latest backup directory
@@ -25,7 +26,7 @@ int directory_backup (
 
 // Single directory backup function
 // -------------------------------------------------------
-int directory_backup(sqlite3 **db, struct _counters *counters, char *source_dir, char *latest_backup_dir, char *destination_dir, char *backup_dir, char *latest_backup_root)
+int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _counters *counters, char *source_dir, char *latest_backup_dir, char *destination_dir, char *backup_dir, char *latest_backup_root)
 {
 	struct dirent **eps;			// Data about scanned directory files
 	struct stat source_dir_stats;		// Current source directory properties
@@ -49,7 +50,7 @@ int directory_backup(sqlite3 **db, struct _counters *counters, char *source_dir,
 	if (strcmp(source_dir, backup_dir) == 0) return 0;
 
 	// Checks if current one is an excluded path
-	if (is_path_excluded(source_dir)) return 0;
+	if (is_path_excluded(source_dir, parameters->excluded_paths)) return 0;
 
 	// Creates destination dir and sets same permissions, owner and group of source one
 	create_directory_tree(destination_dir);
@@ -78,7 +79,7 @@ int directory_backup(sqlite3 **db, struct _counters *counters, char *source_dir,
 			join_strings(&new_destination_dir, 2, destination_dir, new_dir);
 			
 			// Recursively calls backup function
-			directory_backup(db, counters, new_source_dir, new_backup_dir, new_destination_dir, backup_dir, latest_backup_root);
+			directory_backup(db, parameters, counters, new_source_dir, new_backup_dir, new_destination_dir, backup_dir, latest_backup_root);
 			
 			// Frees malloc() allocated strings
 			free(new_dir);

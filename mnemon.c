@@ -59,7 +59,12 @@ struct _counters
 struct _parameters
 {
 	char *backup_dir;
+	
 	char *inclusions_filename;
+	char **included_paths;
+
+	char *exclusions_filename;
+	char **excluded_paths;
 };
 
 
@@ -88,7 +93,6 @@ int main( int argc, char **argv )
 	sqlite3 *db;			// DB pointer
 	char *db_filename;		// SQLite database file name
 	char *temp_db_filename;		// Temporary SQLite database file name
-	char **included_paths;		// Array containing included paths
 	int i;
 
 	printf("\n");			
@@ -105,16 +109,21 @@ int main( int argc, char **argv )
 	// Checks cli arguments
 	check_cli_arguments(argc, argv, &parameters);
 	
-	// Allocates memory for included paths
-	included_paths = (char**) malloc(100 * sizeof(char*));
+	// Allocates memory for paths arrays
+	parameters.included_paths = (char**) malloc(100 * sizeof(char*));
+	parameters.excluded_paths = (char**) malloc(100 * sizeof(char*));
 
 	for (i = 0; i < 100; i++)
 	{
-		included_paths[i] = (char*) malloc(100 * sizeof(char));
+		parameters.included_paths[i] = (char*) malloc(100 * sizeof(char));
+		parameters.excluded_paths[i] = (char*) malloc(100 * sizeof(char));
 	}
 
-	// Gets included paths and stores them into a array
-	save_included_paths(included_paths, parameters.inclusions_filename);
+	// Gets included paths and stores them into parameters array
+	save_paths(parameters.included_paths, parameters.inclusions_filename);
+
+	// Gets excluded paths and stores them into parameters array
+	save_paths(parameters.excluded_paths, parameters.exclusions_filename);
 
 	// If last backup interrupted before finish, deletes temporary directory
 	delete_temp_directory(parameters.backup_dir);
@@ -132,15 +141,15 @@ int main( int argc, char **argv )
 	
 	i = 0;
 
-	while (strlen(included_paths[i]) > 0)
+	while (strlen(parameters.included_paths[i]) > 0)
 	{
 		// Generate paths to latest backup directory and current backup directory
 		join_strings(&temp_backup_root, 2, parameters.backup_dir, _TEMP_BACKUP_DIR);
-		join_strings(&latest_backup_dir, 3, parameters.backup_dir, latest_backup_timestamp, included_paths[i]);
-		join_strings(&current_backup_dir, 3, parameters.backup_dir, _TEMP_BACKUP_DIR, included_paths[i]);
+		join_strings(&latest_backup_dir, 3, parameters.backup_dir, latest_backup_timestamp, parameters.included_paths[i]);
+		join_strings(&current_backup_dir, 3, parameters.backup_dir, _TEMP_BACKUP_DIR, parameters.included_paths[i]);
 	
 		// Execute backup as indicated in parameters
-		directory_backup(&db, &counters, included_paths[i], latest_backup_dir, current_backup_dir, parameters.backup_dir, latest_backup_root);
+		directory_backup(&db, &parameters, &counters, parameters.included_paths[i], latest_backup_dir, current_backup_dir, parameters.backup_dir, latest_backup_root);
 
 		i++;
 	}
