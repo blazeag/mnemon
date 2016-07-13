@@ -6,9 +6,9 @@ mnemon SQLite Database table scheme
 
 Table 'file'
 ------------------
-inode INT NOT NULL PRIMARY KEY		# File's Inode ID
-path TEXT NOT NULL			# Full file path
-mtime VARCHAR(255)			# File's last modification time
+inode INT NOT NULL PRIMARY KEY			# File's Inode ID
+path TEXT NOT NULL				# Full file path
+mtime VARCHAR(255) NOT NULL			# File's last modification time
 
 
 

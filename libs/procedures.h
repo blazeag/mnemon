@@ -230,7 +230,7 @@ int db_initialization(sqlite3 **db, char **db_filename, char **db_temp_filename,
 
 	sqlite3_open(*db_temp_filename, db);
 
-	sqlite3_exec(*db, "CREATE TABLE IF NOT EXISTS file ( inode INT NOT NULL PRIMARY KEY, path TEXT NOT NULL, mtime VARCHAR(255) )", NULL, NULL, &error);
+	sqlite3_exec(*db, "CREATE TABLE IF NOT EXISTS file ( inode INT NOT NULL PRIMARY KEY, path TEXT NOT NULL, mtime VARCHAR(255) NOT NULL )", NULL, NULL, &error);
 	if (error != NULL)
 	{
 		printf("%s\n", error);

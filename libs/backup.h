@@ -11,7 +11,7 @@
 
 int directory_backup (
 	sqlite3 **db,				// SQLite DB pointer
-	struct _parameters *parameters,	// Structure containing files counters
+	struct _parameters *parameters,		// Structure containing files counters
 	struct _counters *counters,		// Structure containing files counters
 	char *source_dir,			// Source directory
 	char *latest_backup_dir,		// Latest backup directory
