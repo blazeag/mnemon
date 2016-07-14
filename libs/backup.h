@@ -166,8 +166,12 @@ int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _count
 				// Create hard link between latest backup file and new backup destination file
 				if ( link (latest_backup_filename, destination_filename) == 0 )
 				{
-					// Outputs if file is not changed. Disabled to avoid flood
-					//printf("[Unmodif]\t%s\n", source_file);
+					// Outputs if file is not changed. Verbose mode only
+					if (parameters->verbose_mode == true)
+					{
+						printf("[Unmodif]\t%s\n", source_file);
+					}
+					
 					counters->unmodified.number++;
 					counters->unmodified.size += current_size;
 				}

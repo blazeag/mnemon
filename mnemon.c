@@ -64,6 +64,8 @@ struct _parameters
 {
 	char *backup_dir;
 	
+	int verbose_mode;
+	
 	char *inclusions_filename;
 	char **included_paths;
 

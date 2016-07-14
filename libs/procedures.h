@@ -427,11 +427,18 @@ int get_latest_backup_dir (sqlite3 **db, char **string)
 void show_help()
 {
 	printf("SYNOPSIS\n");
-	printf("\tmnemon <backup_dir> -i inclusions_file [-e exclusions_file]\n\n");
+	printf("\tmnemon <backup_dir> -i inclusions_file [-e exclusions_file] [-v]\n\n");
 
 	printf("OPTIONS\n");
+
 	printf("\t-i, --inclusions-file <filename>\n");
-	printf("\t-e, --exclusions-file <filename>");
+	printf("\t\tSpecifies a list of included paths\n\n");
+	
+	printf("\t-e, --exclusions-file <filename>\n");
+	printf("\t\tSpecifies a list of excluded paths\n\n");
+	
+	printf("\t-v, --verbose\n");
+	printf("\t\tVerbose mode. Lists also unmodified file during backup process");
 }
 
 
@@ -444,6 +451,7 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 	
 	parameters->backup_dir = NULL;
 	parameters->inclusions_filename = NULL;
+	parameters->verbose_mode = false;
 	
 	
 	
@@ -498,7 +506,6 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 			}
 		}
 		
-		
 		// Exclusions file
 		if (
 			strcmp(argv[i], "-e") == 0
@@ -523,6 +530,15 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 				
 				i++;
 			}
+		}
+		
+		// Verbose mode
+		if (
+			strcmp(argv[i], "-v") == 0
+			|| strcmp(argv[i], "--verbose") == 0
+		)
+		{
+			parameters->verbose_mode = true;
 		}
 	}
 	
