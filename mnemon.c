@@ -75,9 +75,9 @@ struct _parameters
 
 
 
-#include "libs/functions.h"
-#include "libs/procedures.h"
-#include "libs/backup.h"
+#include "include/functions.h"
+#include "include/procedures.h"
+#include "include/backup.h"
 
 
 
