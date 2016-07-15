@@ -9,7 +9,7 @@
 // Prototypes
 // *********************************************************
 
-int directory_backup (
+int directory_backup(
 	sqlite3 **db,				// SQLite DB pointer
 	struct _parameters *parameters,		// Structure containing files counters
 	struct _counters *counters,		// Structure containing files counters
