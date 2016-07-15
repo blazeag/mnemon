@@ -6,10 +6,6 @@
 
 
 
-#define _COPYBLOCKS 1024*1024
-
-
-
 // Prototypes
 // *******************************************************
 
@@ -17,12 +13,18 @@ int correct_path(char **path);
 int file_copy(char *source, char *destination, struct stat stats);
 struct tm *get_time();
 int join_strings(char **final_string, int string_number, ...);
-int save_current_date(char **string, unsigned long *timestamp);
+int get_current_date(char **string, unsigned long *timestamp);
 int occurrence_count(char *string, char c);
 int strpos (char *string, char c, int offset);
 int create_directory_tree(char *path);
 int copy_attributes(char *destination, int type /*8-file, 4-dir*/, struct stat stats);
 int delete_directory(char* path);
+int clean_string(char **out);
+char *seconds_to_time(time_t seconds);
+int is_root();
+int string_match(char *search, char* string);
+char *scale_bytes(double bytes);
+int file_exists(char *path);
 
 // *******************************************************
 
@@ -195,7 +197,7 @@ char *scale_bytes(double bytes)
 
 // Returns current GMT human readable date string
 // -------------------------------------------------------
-int save_current_date(char **string, unsigned long *timestamp)
+int get_current_date(char **string, unsigned long *timestamp)
 {
 	struct tm *datetime;
 
@@ -209,7 +211,7 @@ int save_current_date(char **string, unsigned long *timestamp)
 		exit(-1);
 	}
 
-	sprintf(*string, "%d-%02d-%02d %02d.%02d.%02d", (datetime->tm_year+1900), (datetime->tm_mon+1), datetime->tm_mday, datetime->tm_hour, datetime->tm_min, datetime->tm_sec);
+	sprintf(*string, "%d-%02d-%02d %02d.%02d.%02d", (datetime->tm_year + 1900), (datetime->tm_mon + 1), datetime->tm_mday, datetime->tm_hour, datetime->tm_min, datetime->tm_sec);
 
 	return 0;
 }
@@ -464,9 +466,9 @@ int file_copy(char *source, char *destination, struct stat stats)
 	if (Fp2 == NULL) return -1;
 
 	// If file is smaller than minimum block size, sets block size as the file size
-	if ( file_size >= _COPYBLOCKS)
+	if ( file_size >= _COPY_BLOCK_SIZE)
 	{
-		block_size = _COPYBLOCKS;
+		block_size = _COPY_BLOCK_SIZE;
 	}
 	else
 	{
@@ -484,9 +486,9 @@ int file_copy(char *source, char *destination, struct stat stats)
 	// Read and write every block till the end of file
 	while (file_size > 0)
 	{
-		if ( file_size >= _COPYBLOCKS )
+		if ( file_size >= _COPY_BLOCK_SIZE )
 		{
-			block_size = _COPYBLOCKS;
+			block_size = _COPY_BLOCK_SIZE;
 		}
 		else
 		{
@@ -496,7 +498,7 @@ int file_copy(char *source, char *destination, struct stat stats)
 		fread(buffer, block_size, 1, Fp1);
 		fwrite(buffer, block_size, 1, Fp2);
 
-		file_size -= _COPYBLOCKS;
+		file_size -= _COPY_BLOCK_SIZE;
 	}
 
 	// Closed source and destination files

@@ -24,6 +24,7 @@
 
 #define _LARGEFILE64_SOURCE
 #define _FILE_OFFSET_BITS 64
+#define _COPY_BLOCK_SIZE 1024 * 1024
 
 #include <sqlite3.h>
 #include <time.h>
@@ -138,7 +139,7 @@ int main( int argc, char **argv )
 	db_initialization(&db, &db_filename, &temp_db_filename, parameters.backup_dir);
 
 	// Stores current GMT date into a specified string
-	save_current_date(&str_current_date, &timestamp);
+	get_current_date(&str_current_date, &timestamp);
 	get_latest_backup_dir(&db, &latest_backup_timestamp);
 	join_strings(&latest_backup_root, 2, parameters.backup_dir, latest_backup_timestamp);
 	
