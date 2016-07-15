@@ -1,7 +1,7 @@
 // =======================================================
-// functions.h
+// file_functions.h
 // -------------------------------------------------------
-// Generic functions
+// File-related functions
 // =======================================================
 
 
@@ -9,96 +9,16 @@
 // Prototypes
 // *******************************************************
 
+int is_root();
 int correct_path(char **path);
 int file_copy(char *source, char *destination, struct stat stats);
-struct tm *get_time();
-int join_strings(char **final_string, int string_number, ...);
-int get_current_date(char **string, unsigned long *timestamp);
-int occurrence_count(char *string, char c);
-int strpos (char *string, char c, int offset);
 int create_directory_tree(char *path);
 int copy_attributes(char *destination, int type /*8-file, 4-dir*/, struct stat stats);
 int delete_directory(char* path);
-int clean_string(char **out);
-char *seconds_to_time(time_t seconds);
-int is_root();
-int string_match(char *search, char* string);
 char *scale_bytes(double bytes);
 int file_exists(char *path);
 
 // *******************************************************
-
-
-
-// Add a \ before each ' to all occurrences in the input string
-// -------------------------------------------------------
-int clean_string(char **out)
-{
-	char *string;
-	char *temp;
-	int i, j;
-
-	join_strings(&string, 1, *out);
-
-	if (strpos(string, '\'', 0) == -1) return 0;
-
-	temp = (char*) malloc(strlen(string) * 2 * sizeof(char));
-
-	for (i = 0, j = 0; i < (int)strlen(string); i++, j++)
-	{
-		if (string[i] == '\'')
-		{
-			temp[j] = '\'';
-			j++;
-		}
-
-		temp[j] = string[i];
-	}
-
-	temp[j] = '\0';
-
-	join_strings(out, 1, temp);
-
-	return 0;
-}
-
-
-
-// Converts seconds to human readable time string
-// -------------------------------------------------------
-char *seconds_to_time(time_t seconds)
-{
-	char *string;
-	int sec, min, hrs, day;
-
-	if ( (string = (char*) malloc(50 * sizeof(char)) ) == NULL )
-	{
-		printf("[Error  ]\tInsufficient physical memory");
-		exit(-1);
-	}
-
-	if (seconds < 60)
-	{
-		sprintf(string, "%ld\"", seconds);
-	}
-
-	if (seconds < 3600)
-	{
-		sec = seconds % 60;
-		min = (seconds - sec) / 60;
-		sprintf(string, "%02d'%02d\"", min, sec);
-	}
-
-	if (seconds >= (3600))
-	{
-		sec = seconds % 60;
-		min = ((seconds-sec) % 3600) / 60;
-		hrs = (seconds - min - sec) / 3600;
-		sprintf(string, "%dh%02d'%02d\"", hrs, min, sec);
-	}
-
-	return string;
-}
 
 
 
@@ -123,56 +43,6 @@ int is_root()
 
 
 
-// Generate a structure containing current GMT date
-// -------------------------------------------------------
-struct tm *get_time()
-{
-	time_t timestamp;
-	struct tm *date;
-
-	time(&timestamp);		// Get current timestmap
-	date = gmtime(&timestamp);	// Get date structure
-	
-	return date;
-}
-
-
-
-// Searches for occurrence of a string into another one
-// -------------------------------------------------------
-int string_match(char *search, char* string)
-{
-	int i,j;
-	int different;
-
-
-	if (strlen(search) > strlen(string)) return -1;		// If search string is longer than guest one, then it cannot be contained
-	if (strlen(search) == 0) return -1;			// If search string is empty, then it cannot be contained
-
-	for (i = 0; i < (int) strlen(string) - (int) strlen(search) + 1; i++)
-	{
-		different = false;
-
-		for (j = 0; j < (int)strlen(search); j++)
-		{
-			if (string[i + j] != search[j])
-			{
-				different = true;
-				break;
-			}
-		}
-
-		if (! different )
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-
-
 // Return a string containing scaled bytes value
 // -------------------------------------------------------
 char *scale_bytes(double bytes)
@@ -191,49 +61,6 @@ char *scale_bytes(double bytes)
 	else sprintf(string, "%15.2f GiB", bytes / 1024 / 1024 / 1024);
 
 	return string;
-}
-
-
-
-// Returns current GMT human readable date string
-// -------------------------------------------------------
-int get_current_date(char **string, unsigned long *timestamp)
-{
-	struct tm *datetime;
-
-	datetime = get_time();
-	*timestamp = mktime(datetime);
-	
-
-	if ((*string = (char*) malloc(20 * sizeof(char))) == NULL)
-	{
-		printf("[Error  ]\tInsufficient physical memory");
-		exit(-1);
-	}
-
-	sprintf(*string, "%d-%02d-%02d %02d.%02d.%02d", (datetime->tm_year + 1900), (datetime->tm_mon + 1), datetime->tm_mday, datetime->tm_hour, datetime->tm_min, datetime->tm_sec);
-
-	return 0;
-}
-
-
-
-// Counts how many times a given character is contained in a string
-// -------------------------------------------------------
-int occurrence_count(char *string, char c)
-{
-	int i, count;
-
-	if (strlen(string) == 0) return 0;
-
-	count = 0;
-
-	for (i = 0; i < (int) strlen(string); i++)
-	{
-		if ( string[i] == c ) count++;
-	}
-
-	return count;
 }
 
 
@@ -274,27 +101,6 @@ int delete_directory(char* path)
 
 
 
-// Returns first occurrence index of a character in the given string
-// -------------------------------------------------------
-int strpos (char *string, char c, int offset)
-{
-	int i;
-
-	if (strlen(string) == 0) return -1;
-
-	for (i = offset; i < (int)strlen(string); i++)
-	{
-		if (string[i] == c)
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-
-
 // Create all directory tree of a specified path
 // -------------------------------------------------------
 int create_directory_tree(char *path)
@@ -331,47 +137,6 @@ int create_directory_tree(char *path)
 	}
 
 	return 0;
-}
-
-
-
-// Join two or more strings
-// -------------------------------------------------------
-int join_strings(char **final_string, int string_number, ...)
-{
-	int i;
-	va_list vl;
-	int length;
-
-	length = 0;
-	va_start(vl, string_number);
-
-	for (i = 0; i < string_number; i++)
-	{
-		length += strlen(va_arg(vl,char*));
-	}
-
-	va_end(vl);
-		
-
-	if (( *final_string = (char*) malloc((length + 1) * sizeof(char)) ) == NULL)
-	{
-		printf("[Error  ]\tInsufficient physical memory");
-		exit(-1);
-	}
-
-	*final_string[0] = '\0';
-
-	va_start(vl, string_number);
-
-	for (i=0; i<string_number; i++)
-	{
-		strcat(*final_string, va_arg(vl, char*));
-	}
-
-	va_end(vl);
-
-	return length;
 }
 
 
