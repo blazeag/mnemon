@@ -200,7 +200,7 @@ int is_path_excluded(char *path, char **excluded_paths)
 
 	while (strlen(excluded_paths[i]) > 0)
 	{
-		printf("Checking %s against %s\n", path, excluded_paths[i]);
+		//printf("Checking %s against %s\n", path, excluded_paths[i]);
 		if (strcmp(path, excluded_paths[i]) == 0) return true;
 		
 		i++;

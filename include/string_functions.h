@@ -19,7 +19,7 @@ int string_match(char *search, char* string);
 
 
 
-// Add a \ before each ' to all occurrences in the input string
+// Adds a ' before each ' to double them (all occurrences)
 // -------------------------------------------------------
 int clean_string(char **out)
 {
@@ -29,24 +29,33 @@ int clean_string(char **out)
 
 	join_strings(&string, 1, *out);
 
+	// If no ' is present, return 0
 	if (strpos(string, '\'', 0) == -1) return 0;
 
 	temp = (char*) malloc(strlen(string) * 2 * sizeof(char));
 
-	for (i = 0, j = 0; i < (int)strlen(string); i++, j++)
+	// Find all occurrences and add prepend a '
+	for (i = 0, j = 0; i < (int) strlen(string); i++, j++)
 	{
+		// If current char is a ', add a ' and increase string length by 1
 		if (string[i] == '\'')
 		{
 			temp[j] = '\'';
 			j++;
 		}
 
+		// Add current char to final string
 		temp[j] = string[i];
 	}
 
+	// String always end with null character
 	temp[j] = '\0';
 
+	// Put final string to output string
 	join_strings(out, 1, temp);
+	
+	// Free malloc() allocated memory
+	free(temp);
 
 	return 0;
 }
