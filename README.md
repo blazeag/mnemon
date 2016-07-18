@@ -1,6 +1,4 @@
 # mnemon
-================================
-
 
 ### Yet another hard link based snapshot backup system.
 
