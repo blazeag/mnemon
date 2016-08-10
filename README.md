@@ -14,7 +14,7 @@ Advantages of this method consist in a very fast differences check, full backup 
 To compile you must install SQLite 3 developer libraries. Under debian/ubuntu:
 apt-get install libsqlite3-dev
 
-Then to compile you have to:
+Then to compile:
 gcc mnemon.c -o mnemon -lsqlite3
 
 
