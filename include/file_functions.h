@@ -168,7 +168,7 @@ int file_exists(char *path)
 
 
 
-// Sets file permissions, owner and group specified in stats
+// Set file permissions, owner and group specified in stats
 // -------------------------------------------------------
 int copy_attributes(char *destination, int type /*8-file, 4-dir*/, struct stat stats)
 {
@@ -177,15 +177,15 @@ int copy_attributes(char *destination, int type /*8-file, 4-dir*/, struct stat s
 	struct tm *timestamp;
 	time_t mtime;
 
-	mtime = stats.st_mtime;		// Gets last modification date
+	mtime = stats.st_mtime;		// Get last modification date
 	
-	chmod(destination, stats.st_mode);		// Changes permissions
-	chown(destination, stats.st_uid, stats.st_gid);	// Changes owner/group
+	chmod(destination, stats.st_mode);		// Change permissions
+	chown(destination, stats.st_uid, stats.st_gid);	// Change owner/group
 
 	// If it is a directory, that's all
 	if (type == 4) return 0;
 
-	// If it is a file, sets last modification date as the same of source file one
+	// If it is a file, set last modification date as the same of source file one
 	if ((date_string = (char*) malloc(18 * sizeof(char))) == NULL)
 	{
 		printf("[Error  ]\tInsufficient physical memory");
@@ -194,7 +194,7 @@ int copy_attributes(char *destination, int type /*8-file, 4-dir*/, struct stat s
 
 	timestamp = localtime(&mtime);
 	sprintf(date_string, "%d%02d%02d%02d%02d.%02d", (timestamp->tm_year + 1900), (timestamp->tm_mon + 1), timestamp->tm_mday, timestamp->tm_hour, timestamp->tm_min, timestamp->tm_sec);
-	// Sets the same permissions etc
+	// Set the same permissions etc
 	join_strings(&command, 4, "touch \"", destination, "\" -c -m -t ", date_string);
 	system(command);
 
@@ -209,7 +209,7 @@ int copy_attributes(char *destination, int type /*8-file, 4-dir*/, struct stat s
 
 
 
-// Copies a file
+// Copy a file
 // -------------------------------------------------------
 int file_copy(char *source, char *destination, struct stat stats)
 {
@@ -219,18 +219,18 @@ int file_copy(char *source, char *destination, struct stat stats)
 	int block_size;
 	int64_t file_size;
 
-	// Gets file size
+	// Get file size
 	file_size = stats.st_size;
 
-	// Opens files respectively as read and write
+	// Open files respectively as read and write
 	Fp1 = fopen(source, "rb");
 	Fp2 = fopen(destination, "wb");
 
-	// If opening operation returns in a error, stops
+	// If opening operation returns in a error, stop
 	if (Fp1 == NULL) return -1;
 	if (Fp2 == NULL) return -1;
 
-	// If file is smaller than minimum block size, sets block size as the file size
+	// If file is smaller than minimum block size, set block size as the file size
 	if ( file_size >= _COPY_BLOCK_SIZE)
 	{
 		block_size = _COPY_BLOCK_SIZE;
@@ -270,10 +270,10 @@ int file_copy(char *source, char *destination, struct stat stats)
 	fclose(Fp1);
 	fclose(Fp2);
 
-	// Copies all attributes from source file to destination one
+	// Copy all attributes from source file to destination one
 	copy_attributes(destination, 8, stats);
 
-	// Frees malloc() allocated memory
+	// Free malloc() allocated memory
 	free(buffer);
 
 	return 0;

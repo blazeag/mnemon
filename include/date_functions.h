@@ -32,7 +32,7 @@ struct tm *get_time()
 
 
 
-// Converts seconds to human readable time string
+// Convert seconds to human readable time string
 // -------------------------------------------------------
 char *seconds_to_time(time_t seconds)
 {
@@ -70,7 +70,7 @@ char *seconds_to_time(time_t seconds)
 
 
 
-// Returns current GMT human readable date string
+// Return current GMT human readable date string
 // -------------------------------------------------------
 int get_current_date(char **string, unsigned long *timestamp)
 {

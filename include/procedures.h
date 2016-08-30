@@ -28,7 +28,7 @@ int close_db(sqlite3 **db, char *db_filename, char *db_temp_filename, char *path
 
 
 
-// Deletes temporary directory, if exists
+// Delete temporary directory, if exists
 // -------------------------------------------------------
 int delete_temp_directory(char *path)
 {
@@ -65,7 +65,7 @@ int save_paths (char **paths, char *filename)
 	Fp = fopen(filename, "r");
 	if (Fp == NULL) return -2;
 
-	// Lettura e salvataggio dati
+	// Read and save data
 	i = 0; j = 0;
 
 	while ((c = fgetc(Fp)) != EOF)
@@ -83,7 +83,7 @@ int save_paths (char **paths, char *filename)
 		// If return found, skip to next line
 		else
 		{
-			// Adds a final / to path if needed
+			// Add a final / to path if needed
 			correct_path(&paths[i]);
 			
 			i++;	// Next string
@@ -97,7 +97,7 @@ int save_paths (char **paths, char *filename)
 
 
 
-// Prints a new empty line before exit
+// Print a new empty line before exit
 // -------------------------------------------------------
 void before_exit()
 {
@@ -127,7 +127,7 @@ int counters_initialization(struct _counters *counters)
 
 
 
-// Displays final report
+// Display final report
 // -------------------------------------------------------
 int display_final_report(struct _counters *counters)
 {
@@ -253,9 +253,9 @@ int db_initialization(sqlite3 **db, char **db_filename, char **db_temp_filename,
 
 
 
-// Checks in DB if exists the record of a file which points to the same inode,
-// and makes the necessary insert/update operations.
-// Returns true if file is present into DB, false otherwise
+// Check in DB if exists the record of a file which points to the same inode,
+// and make the necessary insert/update operations.
+// Return true if file is present into DB, false otherwise
 // -------------------------------------------------------
 int exists_in_db(sqlite3 **db, char *path, char *latest_backup_root, struct stat stats, char **old_path)
 {
@@ -422,7 +422,7 @@ int get_latest_backup_dir (sqlite3 **db, char **string)
 
 
 
-// Shows usage and help
+// Show usage and help
 // -------------------------------------------------------
 void show_help()
 {
@@ -455,29 +455,29 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 	
 	
 	
-	// Checks parameters count
+	// Check parameters count
 	if (argc < 2)
 	{
 		show_help();
 		exit(-1);
 	}
 	
-	// If parameters come before backup dir, stops
+	// If parameters come before backup dir, stop
 	if (argv[1][0] == '-')
 	{
 		show_help();
 		exit(-1);
 	}
 	
-	// Stores backup dir in parameters structure
+	// Store backup dir in parameters structure
 	join_strings(&parameters->backup_dir, 1, argv[1]);
 	
-	// Adds a final / to backup dir if needed
+	// Add a final / to backup dir if needed
 	correct_path(&parameters->backup_dir);
 
 	
 	
-	// Searches for parameters
+	// Search for parameters
 	for (i = 2; i < argc; i++)
 	{
 		// Inclusions file
@@ -495,7 +495,7 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 			{
 				join_strings(&parameters->inclusions_filename, 1, argv[i + 1]);
 				
-				// Checks if file exists
+				// Check if file exists
 				if (! file_exists(parameters->inclusions_filename))
 				{
 					printf("Inclusions file %s doesn't exist", parameters->inclusions_filename);
@@ -521,7 +521,7 @@ int check_cli_arguments(int argc, char **argv, struct _parameters *parameters)
 			{
 				join_strings(&parameters->exclusions_filename, 1, argv[i + 1]);
 				
-				// Checks if file exists
+				// Check if file exists
 				if (! file_exists(parameters->exclusions_filename))
 				{
 					printf("Exclusions file %s doesn't exist", parameters->exclusions_filename);
