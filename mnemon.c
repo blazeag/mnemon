@@ -40,27 +40,32 @@
 
 #define true 1
 #define false !true
+
+// Paths and filenames
 #define _TEMP_ROOT_FILE "/_mnemontemp_"
 #define _TEMP_BACKUP_DIR "_mnemontempdir_/"
 #define _DB_FILE "mnemon.db"
 #define _TEMP_DB_FILE "_mnemon.db"
 
-struct _dati
+// Struct to store file data
+struct _file_data
 {
 	int number;
 	double size;
 };
 
+// Struct to store overall statistics
 struct _counters
 {
 	time_t timestamp;
-	struct _dati fresh;
-	struct _dati modified;
-	struct _dati unmodified;
-	struct _dati errors;
-	struct _dati moved;
+	struct _file_data fresh;
+	struct _file_data modified;
+	struct _file_data unmodified;
+	struct _file_data errors;
+	struct _file_data moved;
 };
 
+// Struct to store global parameters
 struct _parameters
 {
 	char *backup_dir;
@@ -107,7 +112,7 @@ int main( int argc, char **argv )
 	printf("\n");			
 	atexit(before_exit);		// At exit, output a new empty line
 
-	// Checks to be root
+	// Check to be root
 	if (! is_root() )
 	{
 		printf("[Error  ]\tYou must be root");
@@ -115,10 +120,10 @@ int main( int argc, char **argv )
 	}
 
 
-	// Checks cli arguments
+	// Check cli arguments
 	check_cli_arguments(argc, argv, &parameters);
 	
-	// Allocates memory for paths arrays
+	// Allocate memory for paths arrays
 	parameters.included_paths = (char**) malloc(100 * sizeof(char*));
 	parameters.excluded_paths = (char**) malloc(100 * sizeof(char*));
 
@@ -128,24 +133,24 @@ int main( int argc, char **argv )
 		parameters.excluded_paths[i] = (char*) malloc(100 * sizeof(char));
 	}
 
-	// Gets included paths and stores them into parameters array
+	// Get included paths and store them into parameters array
 	save_paths(parameters.included_paths, parameters.inclusions_filename);
 
-	// Gets excluded paths and stores them into parameters array
+	// Get excluded paths and store them into parameters array
 	save_paths(parameters.excluded_paths, parameters.exclusions_filename);
 
-	// If last backup interrupted before finish, deletes temporary directory
+	// If last backup interrupted before finish, delete temporary directory
 	delete_temp_directory(parameters.backup_dir);
 
 	// SQLite DB initialization
 	db_initialization(&db, &db_filename, &temp_db_filename, parameters.backup_dir);
 
-	// Stores current GMT date into a specified string
+	// Store current GMT date into a specified string
 	get_current_date(&str_current_date, &timestamp);
 	get_latest_backup_dir(&db, &latest_backup_timestamp);
 	join_strings(&latest_backup_root, 2, parameters.backup_dir, latest_backup_timestamp);
 	
-	// Creates and initializes strucutre containing files counters
+	// Create and initialize strucutre containing files counters
 	counters_initialization(&counters);
 	
 	i = 0;
@@ -163,7 +168,7 @@ int main( int argc, char **argv )
 		i++;
 	}
 
-	// Sets same mother directory attributes to temporary one and rename it
+	// Set same mother directory attributes to temporary one and rename it
 	stat(parameters.backup_dir, &backup_root_stats);
 	copy_attributes(temp_backup_root, 4, backup_root_stats);
 	join_strings(&current_backup_root, 2, parameters.backup_dir, str_current_date);
@@ -174,7 +179,7 @@ int main( int argc, char **argv )
 
 	display_final_report(&counters);					// Displays final report
 
-	// Frees malloc() allocated memory
+	// Free malloc() allocated memory
 	free(temp_backup_root);
 	free(latest_backup_root);
 	free(current_backup_root);
