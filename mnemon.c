@@ -174,10 +174,10 @@ int main( int argc, char **argv )
 	join_strings(&current_backup_root, 2, parameters.backup_dir, str_current_date);
 	rename(temp_backup_root, current_backup_root);
 
-	write_date_into_db (&db, str_current_date, timestamp, &counters);	// Writes current backup data to DB
+	write_date_into_db (&db, str_current_date, timestamp, &counters);	// Write current backup data to DB
 	close_db(&db, db_filename, temp_db_filename, current_backup_root);
 
-	display_final_report(&counters);					// Displays final report
+	display_final_report(&counters);					// Display final report
 
 	// Free malloc() allocated memory
 	free(temp_backup_root);

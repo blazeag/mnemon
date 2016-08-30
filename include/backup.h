@@ -28,7 +28,7 @@ int directory_backup(
 // -------------------------------------------------------
 int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _counters *counters, char *source_dir, char *latest_backup_dir, char *destination_dir, char *backup_dir, char *latest_backup_root)
 {
-	struct dirent **eps;			// Data about scanned directory files
+	struct dirent **eps;			// Scanned directory files data
 	struct stat source_dir_stats;		// Current source directory properties
 	struct stat source_stats;		// Source file properties
 	struct stat latest_backup_stats;	// Latest backup file properties
@@ -46,27 +46,27 @@ int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _count
 	FILE *Fp;				// File pointer, used by file existence check function
 	int fresh;				// Used as boolean to flag if a file exists in latest backup
 
-	// Checks if current one is the path to backup directory
+	// Check if current one is the path to backup directory
 	if (strcmp(source_dir, backup_dir) == 0) return 0;
 
-	// Checks if current one is an excluded path
+	// Check if current one is an excluded path
 	if (is_path_excluded(source_dir, parameters->excluded_paths)) return 0;
 
-	// Creates destination dir and sets same permissions, owner and group of source one
+	// Create destination dir and set same permissions, owner and group of source one
 	create_directory_tree(destination_dir);
 	stat(source_dir, &source_dir_stats);
 	copy_attributes(destination_dir, 4, source_dir_stats);
 
-	// Stores into n the number of files/dirs and data into eps
+	// Store into n the number of files/dirs and data into eps
 	n = scandir (source_dir, &eps, NULL, alphasort);
 
 	// Scan directory to list all files/dirs
 	for (i = 0; i < n; i++)
 	{
-		// Stores current filename
+		// Store current filename
 		join_strings(&current_filename, 1, eps[i]->d_name);
 
-		// If file is not valid (., .., links, etc), skips
+		// If file is not valid (., .., links, etc), skip
 		if (! is_file_valid(eps[i])) continue;
 
 		// If it is a directory, repeat procedure recursively
@@ -78,10 +78,10 @@ int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _count
 			join_strings(&new_backup_dir, 2, latest_backup_dir, new_dir);
 			join_strings(&new_destination_dir, 2, destination_dir, new_dir);
 			
-			// Recursively calls backup function
+			// Recursively call backup function
 			directory_backup(db, parameters, counters, new_source_dir, new_backup_dir, new_destination_dir, backup_dir, latest_backup_root);
 			
-			// Frees malloc() allocated strings
+			// Free malloc() allocated strings
 			free(new_dir);
 			free(new_source_dir);
 			free(new_backup_dir);
@@ -110,13 +110,13 @@ int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _count
 				fresh = true;
 			}
 
-			// If file doesn't exists in latest backup, makes a full copy
+			// If file doesn't exists in latest backup, make a full copy
 			if (fresh)
 			{
 				// If in DB is present an entry with the same inode, then the file has been moved
 				if (exists_in_db(db, source_file, latest_backup_root, source_stats, &old_path))
 				{
-					// Makes a new hard link between old path and new one
+					// Make a new hard link between old path and new one
 					link(old_path, destination_filename);
 					printf("[Moved  ]\t%s\n", source_file);
 					counters->moved.number++;
@@ -160,13 +160,13 @@ int directory_backup(sqlite3 **db, struct _parameters *parameters, struct _count
 				}
 			}
 
-			// If file exists and it is exactly the same, only makes a hard link
+			// If file exists and it is exactly the same, only make a hard link
 			else
 			{
 				// Create hard link between latest backup file and new backup destination file
 				if ( link (latest_backup_filename, destination_filename) == 0 )
 				{
-					// Outputs if file is not changed. Verbose mode only
+					// Output if file is not changed. Verbose mode only
 					if (parameters->verbose_mode == true)
 					{
 						printf("[Unmodif]\t%s\n", source_file);
